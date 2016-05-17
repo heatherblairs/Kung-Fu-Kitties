@@ -5,75 +5,100 @@
     <meta charset="utf-8">
     <title>THE GAME IS ON!</title>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-    <style type="text/css">
-        body {
-            margin: 0;
-        }
-    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <img src="background.jpg">
-    <body>
 
     <script type="text/javascript">
 
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
     function preload() {
-        game.load.spritesheet('charlie', '/main_game/sprites/charliesprites.png', 32, 32);
-        game.load.spritesheet('eva', '/main_game/sprites/evasprites1.png', 32, 32);
-        game.load.spritesheet('kisa', '/main_game/sprites/kisasprites1.png', 32, 32);
-        game.load.spritesheet('explosion', '/main_game/sprites/explosion.png', 32, 32)
-        game.load.image('star', '/game/star.png');
-    		game.load.image('background', '/game/background.jpg');
+        game.load.spritesheet('charlie', '/main_game/images/sprites/charliesprites.png', 32, 32);
+        game.load.spritesheet('eva', '/main_game/images/sprites/evasprites1.png', 32, 32);
+        game.load.spritesheet('kisa', '/main_game/images/sprites/kisasprites1.png', 32, 32);
+        game.load.spritesheet('explosion', '/main_game/images/sprites/explosion.png', 32, 32)
+        game.load.image('star', '/main_game/images/star.png');
+    		game.load.image('background', '/main_game/images/background.jpg');
+        game.load.image('ground', '/main_game/images/platform.png');
+        game.load.image('couch', '/main_game/images/couch.png');
+        game.load.image('lamp', '/main_game/images/lamp.png');
+        game.load.image('plant', '/main_game/images/plant.png');
+        game.load.image('tv', '/main_game/images/tv.png');
+        game.load.image('scroll', '/main_game/images/scroll.png');
     }
 
     var player;
     var platforms;
     var cursors;
-
     var score = 0;
     var scoreText;
+    var timer;
+    var timerTotal = 0;
 
     function create() {
+      // enable physics and add background
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        start = true;
         game.add.sprite(0, 0, 'background');
+
+        // add platforms, enable physics on them, make them immovable
+
         platforms = game.add.group();
         platforms.enableBody = true;
+
         var ground = platforms.create(0, game.world.height - 64, 'ground');
         ground.scale.setTo(20, 2);
         ground.body.immovable = true;
         var ledge = platforms.create(400, 400, 'ground');
         ledge.body.immovable = true;
-
         ledge = platforms.create(-150, 250, 'ground');
         ledge.body.immovable = true;
 
-        // The player and its settings
+        // add scroll
+        scrollText = game.add.group();
+        scrollText.enableBody = true;
+        var scroll = scrollText.create(200, 0, 'scroll');
+        scroll.body.immovable = true;
+
+        // add player and settings
         player = game.add.sprite(32, game.world.height - 150, 'kisa');
         game.physics.arcade.enable(player);
         player.body.bounce.y = 0.2;
         player.body.gravity.y = 400;
         player.body.collideWorldBounds = true;
 
-        //  Our two animations, walking left and right.
+        //  add left and right animations
         player.animations.add('left', [0, 1, 2], 10, true);
         player.animations.add('right', [4, 5, 6], 10, true);
 
+        // add household items (couch, tv, lamp, plants)
+        // var couch
+        // var tv
+        // var lamp
+        // var plant
+
+        // add stars, sprinkle them randomly throughout (with bounce)
+
         stars = game.add.group();
-
         stars.enableBody = true;
-
         for (var i = 0; i < 12; i++) {
             var star = stars.create(i * 70, 0, 'star');
             star.body.gravity.y = 300;
             star.body.bounce.y = 0.7 + Math.random() * 0.2;
         }
 
-        scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
+        // add scorebox
+        scoreText = game.add.text(16, 16, 'score: 0', { font: '32px Press Start 2P', fill: '#000' });
         cursors = game.input.keyboard.createCursorKeys();
+
+        // scroll = game.add.text(0, 0, 'something', { fontSize: '16px', fill: '#000'});
     }
+
+    // check if player collides with stars or platforms
 
     function update() {
         game.physics.arcade.collide(player, platforms);
@@ -81,6 +106,8 @@
         game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
         player.body.velocity.x = 0;
+
+        // set left and right velocities
 
         if (cursors.left.isDown) {
             player.body.velocity.x = -150;
@@ -93,34 +120,102 @@
             player.frame = 4;
         }
 
+        // enable jumping if the player is on the ground
         if (cursors.up.isDown && player.body.touching.down) {
             player.body.velocity.y = -350;
         }
     }
+
+    // collect stars, remove them from screen once collected
 
     function collectStar (player, star) {
         star.kill();
         score += 10;
         scoreText.text = 'Score: ' + score;
 
-//     timer = game.time.create();
-//     timerEvent = timer.add(Phaser.Timer.MINUTE * .5 + Phaser.Timer.SECOND * 1, this.endTimer, this);
+        timer = game.time.create();
+        timerEvent = timer.add(Phaser.Timer.MINUTE * .5 + Phaser.Timer.SECOND * 1, this.endTimer, this);
+
+      }
+
+      // start timer
+
+  //   if (start) {
+  //     timer.start();
+  //     updateTimer();
+  //   }
+  //   if (seconds === "00" && minutes == "00") {
+  //     timer.stop();
+  //     start = false;
+  // }
+
+// },
+
+// var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+//
+// function preload() {
+//
+//     game.load.image('arrow', 'assets/sprites/arrow.png');
+//     game.load.image('bullet', 'assets/sprites/purple_ball.png');
+//
+// }
+//
+// var sprite;
+// var bullets;
+//
+// var fireRate = 100;
+// var nextFire = 0;
+//
+// function create() {
+//
+//     game.physics.startSystem(Phaser.Physics.ARCADE);
+//
+//     game.stage.backgroundColor = '#313131';
+//
+//     bullets = game.add.group();
+//     bullets.enableBody = true;
+//     bullets.physicsBodyType = Phaser.Physics.ARCADE;
+//
+//     bullets.createMultiple(50, 'bullet');
+//     bullets.setAll('checkWorldBounds', true);
+//     bullets.setAll('outOfBoundsKill', true);
+//
+//     sprite = game.add.sprite(400, 300, 'arrow');
+//     sprite.anchor.set(0.5);
+//
+//     game.physics.enable(sprite, Phaser.Physics.ARCADE);
+//
+//     sprite.body.allowRotation = false;
+//
+// }
+//
+// function update() {
+//
+//     sprite.rotation = game.physics.arcade.angleToPointer(sprite);
+//
+//     if (game.input.activePointer.isDown)
+//     {
+//         fire();
 //     }
 //
-//     if (start) {
-//   timer.start();
-//   updateTimer();
 // }
-// if (seconds === "00" && minutes == "00") {
-//   timer.stop();
-//   start = false;
-//   // add death cat
-//   if (once) {
-//     once = false;
-//     this.cat()
-//   }
+//
+// function fire() {
+//
+//     if (game.time.now > nextFire && bullets.countDead() > 0)
+//     {
+//         nextFire = game.time.now + fireRate;
+//
+//         var bullet = bullets.getFirstDead();
+//
+//         bullet.reset(sprite.x - 8, sprite.y - 8);
+//
+//         game.physics.arcade.moveToPointer(bullet, 300);
+//     }
+//
 // }
-// },
+//
+
     </script>
   </body>
 </html>
