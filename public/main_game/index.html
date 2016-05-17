@@ -5,9 +5,8 @@
     <meta charset="utf-8">
     <title>THE GAME IS ON!</title>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
-    <script type="text/javascript" src="script.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script type="text/javascript" src="script.js"></script> -->
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -24,7 +23,7 @@
         game.load.image('star', '/main_game/images/star.png');
     		game.load.image('background', '/main_game/images/background.jpg');
         game.load.image('ground', '/main_game/images/platform.png');
-        game.load.image('couch', '/main_game/images/couch.png');
+        game.load.image('couch', '/main_game/images/couch.png', 100, 100);
         game.load.image('lamp', '/main_game/images/lamp.png');
         game.load.image('plant', '/main_game/images/plant.png');
         game.load.image('tv', '/main_game/images/tv.png');
@@ -33,6 +32,7 @@
 
     var player;
     var platforms;
+    var householdItems;
     var cursors;
     var score = 0;
     var scoreText;
@@ -76,10 +76,27 @@
         player.animations.add('right', [4, 5, 6], 10, true);
 
         // add household items (couch, tv, lamp, plants)
-        // var couch
-        // var tv
-        // var lamp
-        // var plant
+        householdItems = game.add.group();
+        householdItems.enableBody = true;
+
+        var couch = householdItems.create(10, 190, 'couch');
+        couch.scale.setTo(1.5, 1.5);
+        couch.body.immovable = true;
+
+        var tv = householdItems.create(720, 325, 'tv');
+        tv.scale.setTo(1, 1);
+        tv.body.immovable = true;
+
+        var lamp = householdItems.create(500, 325, 'lamp');
+        lamp.scale.setTo(0.5, 0.5);
+        lamp.body.immovable = true;
+
+        var plant = householdItems.create(200, 200, 'plant');
+        plant.scale.setTo(1, 1);
+        plant.body.immovable = true;
+        plant = householdItems.create(150, 250, 'plant');
+        plant.scale.setTo(1, 1);
+        plant.body.immovable = true;
 
         // add stars, sprinkle them randomly throughout (with bounce)
 
@@ -92,10 +109,10 @@
         }
 
         // add scorebox
-        scoreText = game.add.text(16, 16, 'score: 0', { font: '32px Press Start 2P', fill: '#000' });
+        scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '16px', fill: '#000'});
         cursors = game.input.keyboard.createCursorKeys();
 
-        // scroll = game.add.text(0, 0, 'something', { fontSize: '16px', fill: '#000'});
+        scroll = game.add.text(250, 25, 'something', { fontSize: '16px', fill: '#000'});
     }
 
     // check if player collides with stars or platforms
@@ -103,6 +120,7 @@
     function update() {
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(stars, platforms);
+        game.physics.arcade.collide(player, householdItems);
         game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
         player.body.velocity.x = 0;
@@ -133,10 +151,10 @@
         score += 10;
         scoreText.text = 'Score: ' + score;
 
-        timer = game.time.create();
-        timerEvent = timer.add(Phaser.Timer.MINUTE * .5 + Phaser.Timer.SECOND * 1, this.endTimer, this);
-
-      }
+      //   timer = game.time.create();
+      //   timerEvent = timer.add(Phaser.Timer.MINUTE * .5 + Phaser.Timer.SECOND * 1, this.endTimer, this);
+      //
+      // }
 
       // start timer
 
@@ -213,9 +231,7 @@
 //         game.physics.arcade.moveToPointer(bullet, 300);
 //     }
 //
-// }
-//
-
+}
     </script>
   </body>
 </html>
