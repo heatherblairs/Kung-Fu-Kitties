@@ -1,0 +1,11 @@
+var player;
+var platforms;
+var householdItems;
+var cursors;
+var bullet;
+var bullets;
+var weapons = [];
+var score = 0;
+var scoreText;
+var timer;
+var timerTotal = 0;
