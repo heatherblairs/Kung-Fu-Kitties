@@ -15,3 +15,9 @@ header {
 form {
   flex-direction: column;
 }
+
+#endscore {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}

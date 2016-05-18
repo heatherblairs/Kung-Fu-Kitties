@@ -1,10 +1,12 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
+    // load spritesheets
     game.load.spritesheet('charlie', '/main_game/images/sprites/charliesprites.png', 32, 32);
     game.load.spritesheet('eva', '/main_game/images/sprites/evasprites1.png', 32, 32);
     game.load.spritesheet('kisa', '/main_game/images/sprites/kisasprites1.png', 32, 32);
     game.load.spritesheet('explosion', '/main_game/images/sprites/explosion.png', 32, 32);
+    // load static images
     game.load.image('star', '/main_game/images/star.png');
     game.load.image('background', '/main_game/images/background.jpg');
     game.load.image('ground', '/main_game/images/platform.png');
@@ -13,9 +15,10 @@ function preload() {
     game.load.image('plant', '/main_game/images/plant.png');
     game.load.image('tv', '/main_game/images/tv.png');
     game.load.image('scroll', '/main_game/images/scroll.png');
-    game.load.image('bullet', '/main_game/images/sprites/bullet.png');
-
-    displayScore(score);
+    game.load.image('bullet', '/main_game/images/sprites/bullet.png'
+    // load font
+    // game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js')
+  );
 }
 
 function create() {
@@ -94,7 +97,7 @@ function create() {
     }
 
     // add scorebox
-    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '16px', fill: '#000'});
+    scoreText = game.add.text(660, 16, 'score: 0', { fontSize: '16px', fill: '#000'});
     cursors = game.input.keyboard.createCursorKeys();
 
     scroll = game.add.text(250, 25, 'something', { fontSize: '16px', fill: '#000'});
@@ -108,6 +111,9 @@ function create() {
       bullets.createMultiple(100, 'bullet');
       bullets.setAll('anchor.x', 0.5);
       bullets.setAll('anchor.y', 0.5);
+
+      // create timer
+      game.time.events.add(Phaser.Timer.SECOND * 10, endGame, this);
 }
 
 // check if player collides with stars or platforms
@@ -116,7 +122,7 @@ function update() {
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
     game.physics.arcade.collide(player, householdItems);
-    game.physics.arcade.overlap(bullets, householdItems, destroy, null, this);
+    // game.physics.arcade.overlap(bullets, householdItems, destroy, null, this);
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
     player.body.velocity.x = 0;
@@ -150,58 +156,25 @@ function update() {
   //     score.text = 'Score: ' + score;
   //   };
 
-// collect stars, remove them from screen once collected
+// update total score when stars are collected or items destroyed
 
 function collectStar (player, star) {
-    star.kill();
-    score += 10;
-    scoreText.text = 'Score: ' + score;
-  }
+  addScore();
+  star.kill();
+};
 
-  // function displayScore(score) {
-  //   console.log(score);
-  //   return score;
-  // }
+function addScore() {
+  score += 10;
+  scoreText.text = 'Score: ' + score;
+  localStorage.setItem("score", score);
+  return score;
+};
 
-  $(document).ready(function(){
-     $('#usernameSubmit').submit(function(event) {
-       event.preventDefault();
-       var username = $('#username').val();
-      console.log(username);
-    $('').append('<p>' + username + ", you have earned " + displayScore + "!");
-    });
-  });
+    function endGame() {
+      console.log("the game has ended");
+      window.location = "/end/end_index.html";
+    }
 
-    // {
-    //     function fireBullet(){
-    //       if (game.time.now > nextFire && bullets.countDead() > 0)
-    //       {
-    //           nextFire = game.time.now + fireRate;
-    //
-    //           var bullet = bullets.getFirstDead();
-    //
-    //           bullet.reset(sprite.x - 8, sprite.y - 8);
-    //
-    //           game.physics.arcade.moveToPointer(bullet, 300);
-    //       }
-    //
-    //       }
-
-//timer = game.time.create();
-// timerEvent = timer.add(Phaser.Timer.MINUTE * .5 + Phaser.Timer.SECOND * 1, this.endTimer, this);
-// acornCountText = game.add.text(42,20, "x " + acornCount, {fontSize: '15px', fill: 'darkorange'});
-// }
-
-// start timer
-
-//   if (start) {
-//     timer.start();
-//     updateTimer();
-//   }
-//   if (seconds === "00" && minutes == "00") {
-//     timer.stop();
-//     start = false;
-// }
-
-// },
-//
+    function render() {
+      game.debug.text("Time left: " + game.time.events.duration, 32, 32);
+    }
