@@ -10,6 +10,4 @@ var scoreText;
 var timer;
 var timerTotal = 0;
 var selectedCat;
-var explosion;
-var fireRate = 100;
-var nextFire = 0;
+var explosions;

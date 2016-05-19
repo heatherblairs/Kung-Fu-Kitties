@@ -6,6 +6,7 @@ function preload() {
     game.load.spritesheet('eva', '/main_game/images/sprites/evasprites1.png', 32, 32);
     game.load.spritesheet('kisa', '/main_game/images/sprites/kisasprites1.png', 32, 32);
     game.load.spritesheet('explosion', '/main_game/images/sprites/explosion.png', 32, 32);
+
     // load static images
     game.load.image('star', '/main_game/images/star.png');
     game.load.image('background', '/main_game/images/background.jpg');
@@ -16,8 +17,6 @@ function preload() {
     game.load.image('tv', '/main_game/images/tv.png');
     game.load.image('scroll', '/main_game/images/scroll.png');
     game.load.image('bullet', '/main_game/images/sprites/bullet.png'
-    // load font
-    // game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js')
   );
 }
 
@@ -28,7 +27,6 @@ function create() {
     game.add.sprite(0, 0, 'background');
 
     // add platforms, enable physics on them, make them immovable
-
     platforms = game.add.group();
     platforms.enableBody = true;
 
@@ -47,7 +45,8 @@ function create() {
     scroll.body.immovable = true;
 
     // add player and settings
-    player = game.add.sprite(32, game.world.height - 150, 'kisa');
+    selectedCat = localStorage.getItem('selectedCat');
+    player = game.add.sprite(32, game.world.height - 150, selectedCat);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 400;
@@ -86,8 +85,12 @@ function create() {
     plant.scale.setTo(1, 1);
     plant.body.immovable = true;
 
-    // add stars, sprinkle them randomly throughout (with bounce)
+    // add explosions sprite to game
+    explosion = game.add.sprite();
+    explosion.enableBody = true;
+    explosion.physicsBodyType = Phaser.Physics.ARCADE;
 
+    // add stars, sprinkle them randomly throughout (with bounce)
     stars = game.add.group();
     stars.enableBody = true;
     for (var i = 0; i < 12; i++) {
@@ -106,14 +109,15 @@ function create() {
       bullets = game.add.group();
       bullets.enableBody = true;
       bullets.physicsBodyType = Phaser.Physics.ARCADE;
-
-      //  All 40 of them
       bullets.createMultiple(100, 'bullet');
+      bullets.setAll('checkWorldBounds', true);
+      bullets.setAll('outOfBoundsKill', true);
+
       bullets.setAll('anchor.x', 0.5);
       bullets.setAll('anchor.y', 0.5);
 
       // create timer
-      game.time.events.add(Phaser.Timer.SECOND * 10, endGame, this);
+       game.time.events.add(Phaser.Timer.SECOND * 30, endGame, this);
 }
 
 // check if player collides with stars or platforms
@@ -122,7 +126,7 @@ function update() {
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
     game.physics.arcade.collide(player, householdItems);
-    // game.physics.arcade.overlap(bullets, householdItems, destroy, null, this);
+    game.physics.arcade.overlap(bullets, householdItems, destroyItems, null, this);
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
     player.body.velocity.x = 0;
@@ -144,37 +148,47 @@ function update() {
     if (cursors.up.isDown && player.body.touching.down) {
         player.body.velocity.y = -350;
     }
-}
 
-// fire bullets if the enter key is pressed and destroy objects upon contact
-  // function destroy(bullets, householdObjects) {
-  //   if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER)){
-  //       weapons[currentWeapon].fire(player, 45);
-  //     }
-  //     householdItems.kill();
-  //     score += 20;
-  //     score.text = 'Score: ' + score;
-  //   };
+    if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
+      fire();
+    }
+}
 
 // update total score when stars are collected or items destroyed
 
-function collectStar (player, star) {
-  addScore();
-  star.kill();
-};
+    function collectStar (player, star) {
+      addScore();
+      star.kill();
+    };
 
-function addScore() {
-  score += 10;
-  scoreText.text = 'Score: ' + score;
-  localStorage.setItem("score", score);
-  return score;
-};
+    function fire () {
+      if (game.time.now > nextFire && bullets.countDead() > 0) {
+        nextFire = game.time.now + fireRate;
+        var bullet = bullets.getFirstDead();
+        bullet.reset(player.x - 8, player.y - 8);
+        game.physics.arcade.moveToPointer(bullet, 300);
+      }
+    }
+
+    function destroyItems (bullet, householdItems) {
+      addScore();
+      householdItems.kill();
+      // explosion.animations.add('', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
+      console.log("destroy function works technically")
+    }
+
+    function addScore() {
+      score += 10;
+      scoreText.text = 'Score: ' + score;
+      localStorage.setItem("score", score);
+      return score;
+    }
 
     function endGame() {
-      console.log("the game has ended");
       window.location = "/end/end_index.html";
     }
 
     function render() {
-      game.debug.text("Time left: " + game.time.events.duration, 32, 32);
+      game.debug.text("Time left: " +
+       game.time.events.duration, 32, 32);
     }

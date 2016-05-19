@@ -16,8 +16,12 @@ form {
   flex-direction: column;
 }
 
-#endscore {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+h1 {
+  margin-top: 2em;
+}
+
+#endMessage {
+
+  margin-top: 10em;
+
 }
