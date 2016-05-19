@@ -35,14 +35,16 @@ function create() {
     ground.body.immovable = true;
     var ledge = platforms.create(400, 400, 'ground');
     ledge.body.immovable = true;
-    ledge = platforms.create(-150, 250, 'ground');
+    ledge = platforms.create(-150, 300, 'ground');
     ledge.body.immovable = true;
 
-    // add scroll
+    // add scroll with text
     scrollText = game.add.group();
     scrollText.enableBody = true;
-    var scroll = scrollText.create(200, 0, 'scroll');
+    var scroll = scrollText.create(75, 0, 'scroll');
     scroll.body.immovable = true;
+    scroll.scale.setTo(2,2);
+    game.add.text(110, 25, quote, { fontSize: '10px', fill: '#000'});
 
     // add player and settings
     selectedCat = localStorage.getItem('selectedCat');
@@ -60,7 +62,7 @@ function create() {
     householdItems = game.add.group();
     householdItems.enableBody = true;
 
-    var couch = householdItems.create(10, 190, 'couch');
+    var couch = householdItems.create(10, 240, 'couch');
     couch.scale.setTo(1.5, 1.5);
     couch.body.immovable = true;
 
@@ -100,10 +102,8 @@ function create() {
     }
 
     // add scorebox
-    scoreText = game.add.text(660, 16, 'score: 0', { fontSize: '16px', fill: '#000'});
+    scoreText = game.add.text(660, 550, 'score: 0', { fontSize: '16px', fill: '#fff'});
     cursors = game.input.keyboard.createCursorKeys();
-
-    scroll = game.add.text(250, 25, 'something', { fontSize: '16px', fill: '#000'});
 
     // add bullets
       bullets = game.add.group();
@@ -117,7 +117,7 @@ function create() {
       bullets.setAll('anchor.y', 0.5);
 
       // create timer
-       game.time.events.add(Phaser.Timer.SECOND * 30, endGame, this);
+       timer = game.time.events.add(Phaser.Timer.SECOND * 30, endGame, this);
 }
 
 // check if player collides with stars or platforms
@@ -166,15 +166,15 @@ function update() {
         nextFire = game.time.now + fireRate;
         var bullet = bullets.getFirstDead();
         bullet.reset(player.x - 8, player.y - 8);
-        game.physics.arcade.moveToPointer(bullet, 300);
+        game.physics.arcade.moveToXY(bullet, 0, player.y, 150)
       }
     }
 
     function destroyItems (bullet, householdItems) {
       addScore();
       householdItems.kill();
-      // explosion.animations.add('', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
-      console.log("destroy function works technically")
+      // of household items animate on x and y .location
+      // explosion.animations.add('fire', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
     }
 
     function addScore() {
@@ -190,5 +190,5 @@ function update() {
 
     function render() {
       game.debug.text("Time left: " +
-       game.time.events.duration, 32, 32);
+      game.time.events.duration, 32, 575);
     }
