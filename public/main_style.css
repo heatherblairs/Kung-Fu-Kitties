@@ -27,8 +27,8 @@ h1 {
   margin: 1em;
 }
 
-#endMessage {
-
-  margin-top: 10em;
-
+.endPage {
+  display: flex;
+  padding: 2em;
+  flex-direction: column;
 }

@@ -8,7 +8,7 @@ function preload() {
     game.load.spritesheet('explosion', '/main_game/images/sprites/explosion.png', 32, 32);
 
     // load static images
-    game.load.image('star', '/main_game/images/star.png');
+    game.load.image('water', '/main_game/images/water1.png');
     game.load.image('background', '/main_game/images/background.jpg');
     game.load.image('ground', '/main_game/images/platform.png');
     game.load.image('couch', '/main_game/images/couch.png', 100, 100);
@@ -92,13 +92,13 @@ function create() {
     explosion.enableBody = true;
     explosion.physicsBodyType = Phaser.Physics.ARCADE;
 
-    // add stars, sprinkle them randomly throughout (with bounce)
-    stars = game.add.group();
-    stars.enableBody = true;
+    // add water glasses, sprinkle them randomly throughout (with bounce)
+    waterGlasses = game.add.group();
+    waterGlasses.enableBody = true;
     for (var i = 0; i < 12; i++) {
-        var star = stars.create(i * 70, 0, 'star');
-        star.body.gravity.y = 300;
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
+        var water = waterGlasses.create(i * 70, 0, 'water');
+        water.body.gravity.y = 300;
+        water.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
 
     // add scorebox
@@ -124,10 +124,10 @@ function create() {
 
 function update() {
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(waterGlasses, platforms);
     game.physics.arcade.collide(player, householdItems);
     game.physics.arcade.overlap(bullets, householdItems, destroyItems, null, this);
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, waterGlasses, collectWaters, null, this);
 
     player.body.velocity.x = 0;
 
@@ -156,9 +156,9 @@ function update() {
 
 // update total score when stars are collected or items destroyed
 
-    function collectStar (player, star) {
+    function collectWaters (player, water) {
       addScore();
-      star.kill();
+      water.kill();
     };
 
     function fire () {
