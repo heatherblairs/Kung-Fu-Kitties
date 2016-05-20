@@ -48,7 +48,7 @@ function create() {
 
     // add player and settings
     selectedCat = localStorage.getItem('selectedCat');
-    player = game.add.sprite(32, game.world.height - 150, selectedCat);
+    player = game.add.sprite(750, game.world.height - 150, selectedCat);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 400;
@@ -74,16 +74,19 @@ function create() {
     lamp.scale.setTo(0.5, 0.5);
     lamp.body.immovable = true;
 
-    var plant = householdItems.create(550, 450, 'plant');
+    var plant = householdItems.create(0, 450, 'plant');
     plant.scale.setTo(1, 1);
     plant.body.immovable = true;
-    plant = householdItems.create(700, 450, 'plant');
+    plant = householdItems.create(50, 450, 'plant');
     plant.scale.setTo(1, 1);
     plant.body.immovable = true;
-    plant = householdItems.create(650, 450, 'plant');
+    plant = householdItems.create(100, 450, 'plant');
     plant.scale.setTo(1, 1);
     plant.body.immovable = true;
-    plant = householdItems.create(600, 450, 'plant');
+    plant = householdItems.create(150, 450, 'plant');
+    plant.scale.setTo(1, 1);
+    plant.body.immovable = true;
+    plant = householdItems.create(200, 220, 'plant');
     plant.scale.setTo(1, 1);
     plant.body.immovable = true;
 
