@@ -44,7 +44,7 @@ function create() {
     var scroll = scrollText.create(75, 0, 'scroll');
     scroll.body.immovable = true;
     scroll.scale.setTo(2,2);
-    game.add.text(110, 25, quote, { fontSize: '10px', fill: '#000'});
+    game.add.text(130, 50, quote, { fontSize: '16px', fill: '#000'});
 
     // add player and settings
     selectedCat = localStorage.getItem('selectedCat');
@@ -95,7 +95,7 @@ function create() {
     // add water glasses, sprinkle them randomly throughout (with bounce)
     waterGlasses = game.add.group();
     waterGlasses.enableBody = true;
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < 16; i++) {
         var water = waterGlasses.create(i * 70, 0, 'water');
         water.body.gravity.y = 300;
         water.body.bounce.y = 0.7 + Math.random() * 0.2;
@@ -117,7 +117,7 @@ function create() {
       bullets.setAll('anchor.y', 0.5);
 
       // create timer
-       timer = game.time.events.add(Phaser.Timer.SECOND * 30, endGame, this);
+       timer = game.time.events.add(Phaser.Timer.SECOND * 15, endGame, this);
 }
 
 // check if player collides with stars or platforms
